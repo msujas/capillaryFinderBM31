@@ -30,9 +30,7 @@ def peakFind(x,y, capsize = 1):
     peaks = []
     for i in range(len(y[:-1])):
         if (y[i]-ymean)**2  > (y[i-1]-ymean)**2 and (y[i]-ymean)**2 > (y[i+1]-ymean)**2 and np.abs(y[i]-ymean) > ystdev:
-            if not peaks:
-                peaks.append(x[i])
-            elif np.abs(x[i]-peaks[-1]) > capsize:
+            if not peaks or np.abs(x[i]-peaks[-1]) > capsize:
                 peaks.append(x[i])
 
     return np.array(peaks)
