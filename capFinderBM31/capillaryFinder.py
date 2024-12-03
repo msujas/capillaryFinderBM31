@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 
 
 
-file = r''
+file = r'zscan.dat'
 
 def readZscan(filename):
     f = open(filename,'r')
