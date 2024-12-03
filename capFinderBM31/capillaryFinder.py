@@ -96,7 +96,7 @@ def getPositions(filename, capsize = 1):
     capRefined,x,y = run(filename, capsize)
     return capRefined
 
-def plotResults(filename, capsize = 1):
+def plotResults(filename, capsize = 1, block = True):
     z, i1, mon = readZscan(filename)
     i1norm = i1/mon
     capRefined, xfit,yfit = run(filename,capsize)
@@ -108,7 +108,7 @@ def plotResults(filename, capsize = 1):
     plt.ylim(np.min(i1norm) - (np.max(i1norm)-np.min(i1norm))*0.1, np.max(i1norm) + (np.max(i1norm)-np.min(i1norm))*0.1)
     plt.ylabel('i1/monitor')
     plt.xlabel('z position (mm)')
-    plt.show()
+    plt.show(block=block)
     return capRefined
 
 
