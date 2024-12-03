@@ -55,7 +55,7 @@ def dpeakPair(peaks):
 def gauss(x,a,x0,c,d):
     return (a*np.exp(-(x-x0)**2/(2*c**2))) + d
 
-def refineCapPositions(capPositions,x,y, capsize = 1):
+def refineCapPositions(capPositions,x,y, capsize = 1, round = 3):
     ymean = np.mean(y)
     capPosRefined = []
     xarray = np.array([])
@@ -74,30 +74,30 @@ def refineCapPositions(capPositions,x,y, capsize = 1):
 
         limits = ([-np.inf, cap-capsize/2, 0, ymode - 0.002], [np.inf,cap+capsize/2, (capsize/2.35)*1.1, ymode+0.002])
         popt,pcov = curve_fit(gauss,x[minindex:maxindex],y[minindex:maxindex], p0=pguess, maxfev = 100000, bounds=limits)
-        capPosRefined.append(popt[1])
+        capPosRefined.append(popt[1].round(round))
         xfit = x[minindex:maxindex]
         yfit = gauss(xfit,*popt)
         xarray = np.append(xarray,xfit)
         yfitArray = np.append(yfitArray,yfit)
     return np.array(capPosRefined), xarray, yfitArray
 
-def run(filename, capsize = 1):
+def run(filename, **kwargs):
     z,i1,mon = readZscan(filename)
     i1norm = i1/mon
     #d = deriv(file)
     peaks = peakFind(z,i1norm)
     capPositions = peaks #dpeakPair(peaks)
-    capRefined, xfit,yfit = refineCapPositions(capPositions,z,i1norm, capsize)
+    capRefined, xfit,yfit = refineCapPositions(capPositions,z,i1norm, **kwargs)
     return capRefined, xfit, yfit
 
-def getPositions(filename, capsize = 1):
-    capRefined,x,y = run(filename, capsize)
+def getPositions(filename, **kwargs):
+    capRefined,x,y = run(filename, **kwargs)
     return capRefined
 
-def plotResults(filename, capsize = 1, block = True):
+def plotResults(filename, **kwargs):
     z, i1, mon = readZscan(filename)
     i1norm = i1/mon
-    capRefined, xfit,yfit = run(filename,capsize)
+    capRefined, xfit,yfit = run(filename,**kwargs)
     plt.figure()
     plt.plot(z,i1norm)
     plt.plot(xfit,yfit)
@@ -106,10 +106,10 @@ def plotResults(filename, capsize = 1, block = True):
     plt.ylim(np.min(i1norm) - (np.max(i1norm)-np.min(i1norm))*0.1, np.max(i1norm) + (np.max(i1norm)-np.min(i1norm))*0.1)
     plt.ylabel('i1/monitor')
     plt.xlabel('z position (mm)')
-    plt.show(block=block)
+    plt.show()
     return capRefined
 
 
 if __name__ == '__main__':
-    capPositions = plotResults(file, 1.1)
+    capPositions = plotResults(file, capsize = 1.1, round = 3)
     print(capPositions)
