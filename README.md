@@ -1,4 +1,4 @@
-module to find capillaries for zscan data on BM31. Data must have headers of 'zpos i1 monitor'. Gaussian fitting is done to refine the positions.
+module to find capillaries for zscan data on BM31. Data must have headers of 'zpos i1 monitor'. It searches for the last scan in the file, i.e. the last instance of the column header. Gaussian fitting is done to refine the positions.
 
 Example usage:
 
