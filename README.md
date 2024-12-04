@@ -11,3 +11,5 @@ print(capPositions)
 #Or to just get the positions without plotting
 capPositions = cf.getPositions(<filename>)
 ```
+
+![image](https://github.com/user-attachments/assets/0f8a5ede-d6c4-45bb-ae6c-5cd30b243f60)
