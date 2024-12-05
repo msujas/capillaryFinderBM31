@@ -24,12 +24,12 @@ def deriv(filename):
     i1norm = i1s/mons
     return np.gradient(i1norm)
 
-def peakFind(x,y, capsize = 1):
+def peakFind(x,y, capsize = 1, noStdevs = 1):
     ymean = np.average(y)
     ystdev = np.std(y)
     peaks = []
     for i in range(len(y[:-1])):
-        if (y[i]-ymean)**2  > (y[i-1]-ymean)**2 and (y[i]-ymean)**2 > (y[i+1]-ymean)**2 and np.abs(y[i]-ymean) > ystdev:
+        if (y[i]-ymean)**2  > (y[i-1]-ymean)**2 and (y[i]-ymean)**2 > (y[i+1]-ymean)**2 and np.abs(y[i]-ymean) > ystdev*noStdevs:
             if not peaks or np.abs(x[i]-peaks[-1]) > capsize:
                 peaks.append(x[i])
 
@@ -81,13 +81,13 @@ def refineCapPositions(capPositions,x,y, capsize = 1, round = 3):
         yfitArray = np.append(yfitArray,yfit)
     return np.array(capPosRefined), xarray, yfitArray
 
-def run(filename, **kwargs):
+def run(filename, capsize = 1, noStdevs = 1, round = 3):    
     z,i1,mon = readZscan(filename)
     i1norm = i1/mon
     #d = deriv(file)
-    peaks = peakFind(z,i1norm)
+    peaks = peakFind(z,i1norm, capsize=capsize, noStdevs=noStdevs)
     capPositions = peaks #dpeakPair(peaks)
-    capRefined, xfit,yfit = refineCapPositions(capPositions,z,i1norm, **kwargs)
+    capRefined, xfit,yfit = refineCapPositions(capPositions,z,i1norm, capsize=capsize, round = round)
     return capRefined, xfit, yfit
 
 def getPositions(filename, **kwargs):
@@ -111,5 +111,5 @@ def plotResults(filename, **kwargs):
 
 
 if __name__ == '__main__':
-    capPositions = plotResults(file, capsize = 1.1, round = 3)
+    capPositions = plotResults(file, capsize = 1.1, round = 3, noStdevs = 1)
     print(capPositions)
