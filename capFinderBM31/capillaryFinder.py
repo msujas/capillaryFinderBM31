@@ -103,7 +103,7 @@ def plotResults(filename, **kwargs):
     plt.plot(z,i1norm)
     plt.plot(xfit,yfit)
     plt.plot(capRefined, np.zeros(len(capRefined))+np.average(i1norm),'o')
-    plt.bar(capRefined,np.zeros(len(capRefined))+np.max(i1norm), width=0.02)
+    plt.bar(capRefined,np.zeros(len(capRefined))+np.max(i1norm), width=0.05)
     plt.ylim(np.min(i1norm) - (np.max(i1norm)-np.min(i1norm))*0.1, np.max(i1norm) + (np.max(i1norm)-np.min(i1norm))*0.1)
     plt.ylabel('i1/monitor')
     plt.xlabel('z position (mm)')
