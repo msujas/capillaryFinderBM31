@@ -60,8 +60,11 @@ def refineCapPositions(capPositions,x,y, capsize = 1, round = 3):
     capPosRefined = []
     xarray = np.array([])
     yfitArray = np.array([])
-    minindex = np.abs(x-capPositions[0]+capsize).argmin()
-    maxindex = np.abs(x-capPositions[1]-capsize).argmin()
+    try:
+        minindex = np.abs(x-capPositions[0]+capsize).argmin()
+        maxindex = np.abs(x-capPositions[1]-capsize).argmin()
+    except IndexError:
+        raise IndexError('less than 2 peaks found. This method requires at least 2 peaks to find the baseline.')
     baseline = np.mean(y[minindex:maxindex])
     yround = np.round(y,3)
     ymode = stats.mode(yround)[0]
