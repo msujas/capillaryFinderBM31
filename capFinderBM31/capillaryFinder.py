@@ -69,8 +69,12 @@ def refineCapPositions(capPositions,x,y, capsize = 1, round = 3):
     yround = np.round(y,3)
     ymode = stats.mode(yround)[0]
     for cap in capPositions:
-        minindex = np.abs(x-(cap-capsize*2)).argmin()
-        maxindex = np.abs(x-(cap+capsize*2)).argmin()
+        if x[0] < x[-1]:
+            minindex = np.abs(x-(cap-capsize*2)).argmin()
+            maxindex = np.abs(x-(cap+capsize*2)).argmin()
+        else:
+            maxindex = np.abs(x-(cap-capsize*2)).argmin()
+            minindex = np.abs(x-(cap+capsize*2)).argmin()      
         peakindex = np.abs(x-cap).argmin()
         yval = y[peakindex] - baseline
         pguess = [yval,cap,capsize/2.35,ymode]
@@ -97,10 +101,10 @@ def getPositions(filename, **kwargs):
     capRefined,x,y = run(filename, **kwargs)
     return capRefined
 
-def plotResults(filename, **kwargs):
+def plotResults(filename,  **kwargs):
     z, i1, mon = readZscan(filename)
     i1norm = i1/mon
-    capRefined, xfit,yfit = run(filename,**kwargs)
+    capRefined, xfit,yfit = run(filename, **kwargs)
     print(capRefined)
     plt.figure()
     plt.plot(z,i1norm)
