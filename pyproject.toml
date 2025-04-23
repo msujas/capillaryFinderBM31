@@ -16,6 +16,9 @@ classifiers = [
 "Development Status :: 4 - Beta",
 "Programming Language :: Python :: 3.12"]
 
+[project.scripts]
+plotZscan = "capFinderBM31.plotZscan:main"
+
 [tool.setuptools]
 packages = ["capFinderBM31"]
 
