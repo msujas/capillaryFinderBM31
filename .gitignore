@@ -1,2 +1,3 @@
 *.egg-info
 capFinderBM31/__pycache__
+test.py

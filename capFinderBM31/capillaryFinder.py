@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 from scipy.optimize import curve_fit
-
+from enum import Enum
 
 
 file = r'zscan.dat'
@@ -55,17 +55,18 @@ def dpeakPair(peaks):
 def gauss(x,a,x0,c,d):
     return (a*np.exp(-(x-x0)**2/(2*c**2))) + d
 
-def refineCapPositions(capPositions,x,y, capsize = 1, round = 3):
-    ymean = np.mean(y)
+def circleShape(x, mu, x0, r, d):
+    return np.where((x> x0+r) | (x < x0-r),d, np.exp(-2*mu*(r**2-(x-x0)**2)**0.5) * d)
+
+
+def refineCapPositions(capPositions,x,y, capsize = 1, round = 3, method = 'gauss'):
+    if method not in ['gauss', 'circle']:
+        raise ValueError('method must be "gauss" or "circle"')
+    #ymean = np.mean(y)
     capPosRefined = []
     xarray = np.array([])
     yfitArray = np.array([])
-    try:
-        minindex = np.abs(x-capPositions[0]+capsize).argmin()
-        maxindex = np.abs(x-capPositions[1]-capsize).argmin()
-    except IndexError:
-        raise IndexError('less than 2 peaks found. This method requires at least 2 peaks to find the baseline.')
-    baseline = np.mean(y[minindex:maxindex])
+
     yround = np.round(y,3)
     ymode = stats.mode(yround)[0]
     for cap in capPositions:
@@ -76,25 +77,32 @@ def refineCapPositions(capPositions,x,y, capsize = 1, round = 3):
             maxindex = np.abs(x-(cap-capsize*2)).argmin()
             minindex = np.abs(x-(cap+capsize*2)).argmin()      
         peakindex = np.abs(x-cap).argmin()
-        yval = y[peakindex] - baseline
-        pguess = [yval,cap,capsize/2.35,ymode]
-
-        limits = ([-np.inf, cap-capsize/2, 0, ymode - 0.002], [np.inf,cap+capsize/2, (capsize/2.35)*1.1, ymode+0.002])
-        popt,pcov = curve_fit(gauss,x[minindex:maxindex],y[minindex:maxindex], p0=pguess, maxfev = 100000, bounds=limits)
+        yval = y[peakindex] - ymode
+        if method == 'gauss':
+            pguess = [yval,cap,capsize/2.35,ymode]
+            limits = ([-np.inf, cap-capsize/2, 0, ymode - 0.002], [np.inf,cap+capsize/2, (capsize/2.35)*1.1, ymode+0.002])
+            popt,pcov = curve_fit(gauss,x[minindex:maxindex],y[minindex:maxindex], p0=pguess, maxfev = 100000, bounds=limits)
+        elif method == 'circle':
+            pguess = [1, cap, capsize/2, ymode]
+            limits = ([0, cap-capsize/2, 0, ymode - 0.002], [100, cap+capsize/2,capsize, ymode+0.002])
+            popt,pcov = curve_fit(circleShape,x[minindex:maxindex],y[minindex:maxindex], p0=pguess, maxfev = 100000, bounds=limits)
         capPosRefined.append(popt[1].round(round))
         xfit = x[minindex:maxindex]
-        yfit = gauss(xfit,*popt)
+        if method == 'gauss':
+            yfit = gauss(xfit,*popt)
+        elif method == 'sphere':
+            yfit = circleShape(xfit,*popt)
         xarray = np.append(xarray,xfit)
         yfitArray = np.append(yfitArray,yfit)
     return np.array(capPosRefined), xarray, yfitArray
 
-def run(filename, capsize = 1, noStdevs = 1, round = 3):    
+def run(filename, capsize = 1, noStdevs = 1, round = 3, method = 'gauss'):    
     z,i1,mon = readZscan(filename)
     i1norm = i1/mon
     #d = deriv(file)
     peaks = peakFind(z,i1norm, capsize=capsize, noStdevs=noStdevs)
     capPositions = peaks #dpeakPair(peaks)
-    capRefined, xfit,yfit = refineCapPositions(capPositions,z,i1norm, capsize=capsize, round = round)
+    capRefined, xfit,yfit = refineCapPositions(capPositions,z,i1norm, capsize=capsize, round = round, method=method)
     return capRefined, xfit, yfit
 
 def getPositions(filename, **kwargs):
