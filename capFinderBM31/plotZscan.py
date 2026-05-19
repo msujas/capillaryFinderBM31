@@ -18,8 +18,7 @@ def main():
         print('invalid method, must be "gauss" or "circle"')
         return
 
-    x = cf.plotResults(file, noStdevs=noStdevs, capsize = capsize)
-    print(x.tolist())
+    cf.plotResults(file, noStdevs=noStdevs, capsize = capsize)
 
 if __name__ ==  '__main__':
     main()

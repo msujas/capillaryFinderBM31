@@ -113,7 +113,7 @@ def plotResults(filename,  **kwargs):
     z, i1, mon = readZscan(filename)
     i1norm = i1/mon
     capRefined, xfit,yfit = run(filename, **kwargs)
-    print(capRefined)
+    print(capRefined.tolist())
     plt.figure()
     plt.plot(z,i1norm)
     plt.plot(xfit,yfit)
