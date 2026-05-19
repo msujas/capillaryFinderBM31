@@ -1,3 +1,6 @@
 *.egg-info
 capFinderBM31/__pycache__
 test.py
+ascanZapPlot.py
+*.png
+build

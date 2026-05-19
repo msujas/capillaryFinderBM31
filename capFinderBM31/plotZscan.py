@@ -7,7 +7,7 @@ def main():
     parser.add_argument('file', help = 'zscan file for the program to read', type = str)
     parser.add_argument('-s', '--nostdevs', help = 'number of standard deviations used to find peaks (default 1)', type = float, default = 1)
     parser.add_argument('-c','--capsize', type = float, default = 1, help = 'capillary size (will avoid finding 2 peaks within 1 capillary size) (default 1)')
-    parser.add_argument('-m','--method', type = str, default = 'gauss', help = 'method used to find the peak shape (gauss or circle)')
+    parser.add_argument('-m','--method', type = str, default = 'gauss', help = 'method used to find the peak shape (gauss or circle, default gauss)')
     args = parser.parse_args()
 
     file = args.file
